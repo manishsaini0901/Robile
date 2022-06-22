@@ -132,11 +132,12 @@ class wall_follower:
 
         :return: A 2D array of shape (n,2), representing points in cartesian coordinates 
         """
-
-        laser_cart_coord = None
-
-        # YOUR CODE HERE
-
+        center = np.array([0,0])
+        r = polar_points.T[0,]
+        theta = polar_points.T[1,]
+        x = r*np.sin(np.deg2rad(theta))
+        y = r*np.cos(np.deg2rad(theta))
+        laser_cart_coord = np.array([x, y]).T
         return laser_cart_coord
 
     def publish_zero_twist(self):
