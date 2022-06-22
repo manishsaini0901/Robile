@@ -101,15 +101,13 @@ class wall_follower:
         :rtype: tuple
         """
 
-        best_point_1 = ()
-        best_point_2 = ()
-        inliers = ()
-        best_pair = None
-        best_inliers_len = 0
         best_point_1 = []
         best_point_2 = []
-        for i in range(k):
-            rand_num = random.sample(range(0, len(points)), 2)
+        best_inliers = []
+        best_inliers_len = 0
+        for i in range(iterations):
+            inliers = []
+            rand_num = random.sample(range(0, len(points)), dist_thresh)
             start = points[rand_num[0]]
             end = points[rand_num[1]]
             line = Line(start,end)
@@ -118,11 +116,13 @@ class wall_follower:
                 dist = line.point_dist(point)
                 if dist <= dist_thresh:
                     inliers_len = inliers_len + 1
+                    inliers.append(point)
             if best_inliers_len < inliers_len:
                 best_inliers_len = inliers_len
                 best_point_1 = start
                 best_point_2 = end
-        return (best_point_1, best_point_2, inliers[best_pair])
+                best_inliers = inliers
+        return (best_point_1, best_point_2, best_inliers)
 
     def np_polar2rect(self, polar_points):
         """
@@ -132,11 +132,12 @@ class wall_follower:
 
         :return: A 2D array of shape (n,2), representing points in cartesian coordinates 
         """
-
-        laser_cart_coord = None
-
-        # YOUR CODE HERE
-
+        center = np.array([0,0])
+        r = polar_points.T[0,]
+        theta = polar_points.T[1,]
+        x = r*np.sin(np.deg2rad(theta))
+        y = r*np.cos(np.deg2rad(theta))
+        laser_cart_coord = np.array([x, y]).T
         return laser_cart_coord
 
     def publish_zero_twist(self):
